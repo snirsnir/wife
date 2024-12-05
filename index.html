@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>לאשתי היקרה</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffe6e6, #ffb3b3, #ff9999);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .sound-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 800px;
+            width: 95%;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+            position: relative;
+            transform: scale(0.7);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .modal.show .modal-content {
+            transform: scale(1);
+        }
+
+        .modal img {
+            max-width: 200px;
+            margin: 2rem 0;
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .modal h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: #e74c3c;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .modal-button {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #e74c3c;
+            color: white;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .modal-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            opacity: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .container.blur {
+            opacity: 0.5;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e74c3c;
+        }
+
+        .love-letter {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e74c3c;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .sorry-image {
+            max-width: 300px;
+            margin: 2rem auto;
+            display: block;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            border: 2px solid #e74c3c;
+            cursor: pointer;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .activity-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: #e74c3c;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #e74c3c;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        .selected {
+            border: 3px solid #27ae60;
+            position: relative;
+        }
+
+        .selected::after {
+            content: "✓";
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #27ae60;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .submit-button {
+            display: block;
+            margin: 2rem auto;
+            padding: 1rem 3rem;
+            font-size: 1.2rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .submit-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="sound-toggle" onclick="toggleSound()">
+        <i class="fas fa-volume-up"></i>
+    </button>
+
+    <div class="modal" id="welcomeModal">
+        <div class="modal-content">
+            <h2>אשתי היקרה</h2>
+            <img src="https://i.ibb.co/DVsTWdC/sorry.jpg" alt="התנצלות">
+            <p>אני מתנצל על אתמול...</p>
+            <div class="modal-buttons">
+                <button class="modal-button" onclick="startWithMusic()">להתחיל</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer">
+        <div class="header">
+            <h1>לאשתי היקרה</h1>
+        </div>
+
+        <div class="love-letter">
+            <p>אהובתי היקרה,</p>
+            <br>
+            <p>אני רוצה להתנצל על אתמול, לא הייתי צריך להיות חסר סבלנות כלפייך וכלפי עומר. המילים שאמרתי היו ללא מחשבה, וליבי נשבר כשראיתי את העצב בעינייך. אני צריך להיות יותר קשוב אלייך, לצרכים שלך ולרגשות שלך.</p>
+            <br>
+            <p>כל יום שעובר אני מתאהב בך מחדש, ואני מודה לאלוהים על הזכות להיות בעלך. את לא רק אשתי, את החברה הכי טובה שלי, האם המדהימה של ילדינו, והאדם שאיתו אני רוצה להזדקן.</p>
+            <br>
+            <p>אני מבטיח להקשיב יותר, להיות שם בשבילך ובשביל עומר, ולהיות בן זוג טוב יותר. מבטיח להיות סבלני יותר, מבין יותר, ולהעריך כל רגע שאנחנו ביחד. את והילדים שלנו הם הדבר הכי חשוב לי בעולם, ואני אעשה הכל כדי להראות לכם את זה כל יום מחדש.</p>
+            <br>
+            <img src="https://i.ibb.co/DVsTWdC/sorry.jpg" alt="התנצלות" class="sorry-image">
+            <br>
+            <p>אני יודע שמילים לבד לא מספיקות, ולכן בחרי בבקשה את אחת מהאפשרויות הבאות כפיצוי קטן (אבל מגיע לך הרבה יותר):</p>
+         </div>
+
+
+        <div class="activities-grid">
+            <div class="activity-card" onclick="selectActivity(this)">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5TCXjxfxzpxs_IiiaUMLRJpGbftnKe6Uwog&s" alt="מסאז">
+                <h3>מסאז' מפנק - 20 דקות</h3>
+                <p>מסאז' מרגיע ומפנק לבחירתך, עם שמנים ארומטיים ומוזיקה נעימה. זמן איכות רק בשבילך.</p>
+            </div>
+
+            <div class="activity-card" onclick="selectActivity(this)">
+                <img src="https://ynet-pic1.yit.co.il/cdn-cgi/image/f=auto,w=740,q=75/picserver5/crop_images/2017/02/19/7597268/7597268_0_0_980_653_0_x-large.jpg" alt="ארוחת ערב בשרית">
+                <h3>ארוחת ערב בשרית מפנקת</h3>
+                <p>ארוחת ערב מושקעת עם הנתחים הכי טובים, יין משובח ואווירה רומנטית.</p>
+            </div>
+
+            <div class="activity-card" onclick="selectActivity(this)">
+                <img src="https://cookingworkshop.co.il/wp-content/uploads/2020/03/%D7%97%D7%9C%D7%A7-%D7%9E%D7%9E%D7%98%D7%A2%D7%9E%D7%99-%D7%A9%D7%91%D7%95%D7%A2%D7%95%D7%AA.jpeg" alt="ארוחה איטלקית">
+                <h3>ערב איטלקי רומנטי</h3>
+                <p>פסטות טריות, רטבים מושקעים, יין איטלקי ומוזיקה רומנטית ברקע.</p>
+            </div>
+
+            <div class="activity-card" onclick="selectActivity(this)">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRapoEILVDa-uLEu6jPhQEIMoQER6ljZAnAhw&s" alt="הפתעה">
+                <h3>פינוק בהפתעה</h3>
+                <p>משהו מיוחד שאני כבר אדאג לארגן, מבטיח שתאהבי!</p>
+            </div>
+
+            <div class="activity-card" onclick="selectActivity(this)">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsqCrSbl70M1m2z2K36Awsy27ZKanI-aKQJg&s" alt="כביסה">
+                <h3>קיפול כביסה במוצ"ש</h3>
+                <p>אני אקפל את כל הכביסה במוצ"ש הקרוב, את יכולה לנוח ולהירגע.</p>
+            </div>
+
+            <div class="activity-card" onclick="selectActivity(this)">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQSWZ0NkRe6RcOZC82cBJblqQANer_Usd5-g&s" alt="ניקיון">
+                <h3>ניקיון מלא של הבית</h3>
+                <p>ניקיון יסודי של כל הבית כולל שטיפה, אבק וחלונות. הכל יבריק!</p>
+            </div>
+        </div>
+
+        <button class="submit-button" onclick="sendEmail()" disabled id="submitButton">
+            שלח את הבחירה
+        </button>
+    </div>
+
+    <audio id="backgroundMusic" loop>
+        <source src="song.mp3" type="audio/mp3">
+    </audio>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('welcomeModal');
+    const mainContainer = document.getElementById('mainContainer');
+    const music = document.getElementById('backgroundMusic');
+    const soundToggle = document.querySelector('.sound-toggle');
+    let isMuted = false;
+
+    // Show modal immediately when DOM is loaded
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.classList.add('show');
+        mainContainer.classList.add('blur');
+    }, 100);
+
+    // Initialize EmailJS
+    emailjs.init("tan0Ds1XFbwU3m1f9");
+
+    // Assign all functions to window object to make them globally accessible
+    window.startWithMusic = function() {
+    closeModal();
+    music.play();
+    isMuted = false;
+    updateSoundIcon();
+}
+
+// נמחק את הפונקציה startWithoutMusic כי היא כבר לא נחוצה
+
+    window.startWithoutMusic = function() {
+        closeModal();
+        music.pause();
+        isMuted = true;
+        updateSoundIcon();
+    }
+
+    window.closeModal = function() {
+        modal.classList.remove('show');
+        mainContainer.classList.remove('blur');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
+
+    window.toggleSound = function() {
+        isMuted = !isMuted;
+        if (isMuted) {
+            music.pause();
+        } else {
+            music.play();
+        }
+        updateSoundIcon();
+    }
+
+    window.updateSoundIcon = function() {
+        const icon = soundToggle.querySelector('i');
+        icon.className = isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+    }
+
+    window.selectActivity = function(card) {
+        // Remove selected class from all cards
+        document.querySelectorAll('.activity-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked card
+        card.classList.add('selected');
+        
+        // Enable submit button
+        document.getElementById('submitButton').disabled = false;
+    }
+
+    window.sendEmail = function() {
+    const selectedCard = document.querySelector('.activity-card.selected');
+    if (!selectedCard) return;
+
+    // הצג אנימציית טעינה
+    document.getElementById('submitButton').disabled = true;
+    document.getElementById('submitButton').textContent = '...שולח';
+
+    const choice = selectedCard.querySelector('h3').textContent;
+    
+    emailjs.send("service_zdnoxzm", "template_9igk50j", {
+        to_name: "שניר",  // השם שיופיע במייל
+        from_name: "אשתך האוהבת",  // השם של השולח
+        message: choice,  // הבחירה שנבחרה
+        choice: choice,  // שדה נוסף אם צריך
+        to_email: "papasnir@gmail.com"  // כתובת המייל
+    }).then(function() {
+        showSuccessModal();
+    }, function(error) {
+        console.error("שגיאת שליחה:", error);
+        alert("שגיאה בשליחת המייל, נסי שוב");
+        document.getElementById('submitButton').disabled = false;
+        document.getElementById('submitButton').textContent = 'שלח את הבחירה';
+    });
+}
+
+window.showSuccessModal = function() {
+    modal.innerHTML = `
+        <div class="modal-content">
+            <h2>תודה!</h2>
+            <img src="https://i.ibb.co/DVsTWdC/sorry.jpg" alt="תודה" class="sorry-image">
+            <p>הבחירה שלך נשלחה בהצלחה</p>
+            <div class="modal-buttons">
+                <button class="modal-button" onclick="closeSuccessModal()">סגור</button>
+            </div>
+        </div>
+    `;
+    
+    modal.style.display = 'flex';
+    modal.classList.add('show');
+}
+
+// נוסיף פונקציה חדשה לסגירת מודל ההצלחה
+window.closeSuccessModal = function() {
+    modal.classList.remove('show');
+    mainContainer.classList.remove('blur');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300);
+
+    // נאפס את הטופס
+    document.querySelectorAll('.activity-card').forEach(c => {
+        c.classList.remove('selected');
+    });
+    document.getElementById('submitButton').disabled = true;
+    document.getElementById('submitButton').textContent = 'שלח את הבחירה';
+}
+});
+        </script>
